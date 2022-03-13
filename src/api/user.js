@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import http from '@/utils/http'
 
 export function login(data) {
   return request({
@@ -21,4 +22,9 @@ export function logout() {
     url: '/vue-admin-template/user/logout',
     method: 'post'
   })
+}
+
+//获取用户列表
+export const getListApi = async(parm) =>{
+  return await http.get("/api/user/list",parm)
 }

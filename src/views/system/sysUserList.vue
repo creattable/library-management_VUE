@@ -154,6 +154,8 @@
 </template>
 
 <script>
+import {getListApi} from "@/api/user"
+
 //引入弹框组件
 import SysDialog from "@/components/dialog/SysDialog.vue";
 
@@ -273,7 +275,21 @@ export default {
     };
   },
 
+  created(){
+    this.getList()
+  },
+
   methods: {
+    //获取列表
+    async getList(){
+      let res= await getListApi(this.listParm)
+      console.log('返回成功')
+      console.log(res)
+      if(res && res.code ==200){
+
+      }
+    },
+
     //弹框关闭
     onClose() {
       this.dialog.visible = false;
