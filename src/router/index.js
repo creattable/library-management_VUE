@@ -29,7 +29,6 @@ import Layout from '@/layout'
  * constantRoutes
  * a base page that does not have permission requirements
  * all roles can be accessed
- * 在这里配置的路由不需要权限，所有人都能访问
  */
 export const constantRoutes = [
   {
@@ -58,15 +57,14 @@ export const constantRoutes = [
 ]
 
 /**
- * asyncRoutes
+ * asyncRoutes 需要权限才能访问
  * the routes that need to be dynamically loaded based on user roles
- * 动态路由，需要有权限才能访问
  */
 export const asyncRoutes = [
   {
     path: '/system',
     component: Layout,
-    alwaysShow: true ,
+    alwaysShow: true,
     name: 'system',
     meta: { title: '系统管理', icon: 'el-icon-s-help' },
     children: [
@@ -90,13 +88,11 @@ export const asyncRoutes = [
       }
     ]
   },
-
   {
     path: '/reader',
     component: Layout,
-    // 当只有一个选项的时候也会打开
-    alwaysShow: true ,
     name: 'reader',
+    alwaysShow: true,
     meta: { title: '读者管理', icon: 'el-icon-s-help' },
     children: [
       {
@@ -104,14 +100,13 @@ export const asyncRoutes = [
         name: 'readerList',
         component: () => import('@/views/reader/readerList'),
         meta: { title: '读者列表', icon: 'table' }
-      },
+      }
     ]
   },
-
   {
     path: '/book',
     component: Layout,
-    alwaysShow: true ,
+    alwaysShow: true,
     name: 'book',
     meta: { title: '图书管理', icon: 'el-icon-s-help' },
     children: [
@@ -125,11 +120,10 @@ export const asyncRoutes = [
         path: '/bookList',
         name: 'bookList',
         component: () => import('@/views/book/bookList'),
-        meta: { title: '图书列表', icon: 'tree' }
+        meta: { title: '图书列表', icon: 'table' }
       }
     ]
   },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

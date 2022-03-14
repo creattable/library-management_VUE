@@ -86,8 +86,6 @@ service.interceptors.response.use(
 )
 
 //请求方法
-//transformRequest再参数发送之前对参数进行处理，转成json
-
 const http = {
     post(url, params) {
       return service.post(url, params, {

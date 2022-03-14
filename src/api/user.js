@@ -1,6 +1,5 @@
 import request from '@/utils/request'
 import http from '@/utils/http'
-
 export function login(data) {
   return request({
     url: '/vue-admin-template/user/login',
@@ -23,8 +22,19 @@ export function logout() {
     method: 'post'
   })
 }
-
 //获取用户列表
 export const getListApi = async(parm) =>{
   return await http.get("/api/user/list",parm)
+}
+//新增
+export const addUserApi = async(parm) =>{
+  return await http.post("/api/user",parm)
+}
+//编辑
+export const editUserApi = async(parm) =>{
+  return await http.put("/api/user",parm)
+}
+//删除
+export const deleteUserApi = async(parm) =>{
+  return await http.delete("/api/user",parm)
 }
