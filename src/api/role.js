@@ -1,5 +1,5 @@
 import http from '@/utils/http'
-//列表
+//列表查询
 export const getListApi = async(parm) =>{
     return await http.get("/api/role/list",parm)
 }

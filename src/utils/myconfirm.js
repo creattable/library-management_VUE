@@ -1,4 +1,5 @@
 import { MessageBox } from "element-ui";
+//信息确认弹框封装
 export default function myconfirm(text) {
     return new Promise((resolve, reject) => {
         MessageBox.confirm(text, '系统提示', {

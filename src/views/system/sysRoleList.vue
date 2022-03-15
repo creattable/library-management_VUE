@@ -218,7 +218,7 @@ export default {
       this.dialog.title = "新增角色";
       //清空表单数据
       this.$resetForm("addRef", this.addModel);
-      //
+      //设为新增
       this.addModel.type = "0";
     },
     //重置按钮
