@@ -21,6 +21,12 @@
     <!-- 表格 -->
     <el-table :height="tableHeight" :data="tableData" border stripe>
       <el-table-column prop="roleName" label="角色名称"></el-table-column>
+      <el-table-column prop="roleType" label="角色类型">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.roleType == '1'">系统用户</el-tag>
+          <el-tag v-if="scope.row.roleType == '2'" type="success">读者角色</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="remark" label="角色备注"></el-table-column>
       <el-table-column label="操作" align="center" width="180">
         <template slot-scope="scope">
@@ -76,6 +82,22 @@
               </el-form-item>
             </el-col>
             <el-col :span="12" :offset="0">
+              <el-form-item label="角色类型">
+                <el-select v-model="addModel.roleType" placeholder="请选择">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12" :offset="0">
               <el-form-item label="角色备注">
                 <el-input v-model="addModel.remark"></el-input>
               </el-form-item>
@@ -97,6 +119,18 @@ export default {
   },
   data() {
     return {
+      //新增里的用户类型下拉框选择
+      options: [
+        {
+          value: "1",
+          label: "系统用户",
+        },
+        {
+          value: "2",
+          label: "读者用户",
+        },
+      ],
+
       //表单验证
       rules: {
         roleName: [
@@ -113,6 +147,7 @@ export default {
         roleId: "",
         roleName: "",
         remark: "",
+        roleType: "",
       },
       //弹框属性
       dialog: {
