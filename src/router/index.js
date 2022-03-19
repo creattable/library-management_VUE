@@ -124,6 +124,27 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/borrow',
+    component: Layout,
+    alwaysShow: true,
+    name: 'borrow',
+    meta: { title: '借阅管理', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: '/bookBorrow',
+        name: 'bookBorrow',
+        component: () => import('@/views/borrow/bookBorrow'),
+        meta: { title: '借书管理', icon: 'table' }
+      },
+      {
+        path: '/bookReturn',
+        name: 'bookReturn',
+        component: () => import('@/views/borrow/bookReturn'),
+        meta: { title: '还书管理', icon: 'table' }
+      }
+    ]
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

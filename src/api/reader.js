@@ -15,3 +15,7 @@ export const editReaderApi=async(parm) =>{
 export const deleteReaderApi=async(parm) =>{
     return await http.delete('/api/reader',parm)
 }
+//根据学号查询
+export const getByUserNameApi = async(parm) =>{
+    return await http.get("/api/reader/getByUserName",parm)
+}

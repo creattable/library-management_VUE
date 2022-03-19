@@ -24,6 +24,10 @@ Vue.prototype.$myconfirm = myconfirm;
 //对象快速复制
 import objCoppy from '@/utils/objCoppy'
 Vue.prototype.$objCoppy = objCoppy;
+//表格穿梭框
+import eltTransfer from 'elt-transfer'
+Vue.use(eltTransfer)
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
