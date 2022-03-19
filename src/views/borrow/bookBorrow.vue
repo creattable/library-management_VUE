@@ -31,8 +31,23 @@
               @click="resetBtn"
               >重置</el-button
             >
-            <el-button type="primary" size="small" icon="el-icon-edit-outline" @click="borrowBtn">借书</el-button>
-            
+          </el-form-item>
+          <el-form-item label="还书时间">
+            <el-date-picker
+              v-model="returnTime"
+              type="date"
+              placeholder="选择还书时间"
+            >
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-edit-outline"
+              @click="borrowBtn"
+              >借书</el-button
+            >
           </el-form-item>
         </el-form>
       </div>
@@ -119,6 +134,7 @@
 </template>
 
 <script>
+import { borrowApi } from "@/api/borrow";
 import { getByUserNameApi } from "@/api/reader";
 import { getListApi } from "@/api/book";
 import eltTransfer from "elt-transfer/src/eltTransfer";
@@ -128,6 +144,8 @@ export default {
   },
   data() {
     return {
+      returnTime: "",
+      bookIds: "",
       tableData: [],
       leftColumns: [
         { label: "图书名称", id: "bookName", width: "120px" },
@@ -142,6 +160,7 @@ export default {
         username: "",
       },
       showUser: {
+        readerId: "",
         learnNum: "",
         username: "",
         idCard: "",
@@ -150,6 +169,7 @@ export default {
         className: "",
         checkStatus: "",
       },
+      //图书列表分页参数
       listParm: {
         currentPage: "",
         pageSize: "",
@@ -160,8 +180,38 @@ export default {
   },
   methods: {
     //借书按钮
-    borrowBtn(){
-      console.log(this.tableData)
+    async borrowBtn() {
+      this.bookIds = [];
+      console.log(this.tableData);
+      if (!this.returnTime) {
+        this.$message.error("请选择还书时间");
+        return;
+      }
+      if (!this.showUser.readerId) {
+        this.$message.error("请查询借书信息是否存在");
+        return;
+      }
+      if (this.tableData.length < 1) {
+        this.$message.error("请选择要借的书");
+        return;
+      }
+      //找到每个图书的id
+      for (let i = 0; i < this.tableData.length; i++) {
+        this.bookIds.push(this.tableData[i].bookId);
+      }
+      //提交
+      let parm = {
+        readerId: this.showUser.readerId,
+        bookIds: this.bookIds,
+        returnTime: this.returnTime,
+      };
+      let res = await borrowApi(parm);
+      if (res && res.code == 200) {
+        this.$message.success(res.msg);
+        setTimeout(function () {
+          window.location.reload();
+        }, 3000);
+      }
     },
     async paginationCallBack(obj) {
       console.log(obj);
@@ -189,6 +239,7 @@ export default {
     },
     resetBtn() {
       this.searchParm.username = "";
+      this.searchParm.readerId = "";
       this.showUser.learnNum = "";
       this.showUser.username = "";
       this.showUser.idCard = "";
