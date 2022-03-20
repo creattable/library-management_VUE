@@ -1,12 +1,12 @@
 <template>
   <el-main>
     <!-- 搜索栏 -->
-    <el-form :model="listparm" label-width="80px" :inline="true" size="small">
+    <el-form :model="listParm" label-width="80px" :inline="true" size="small">
       <el-form-item label="学号">
-        <el-input v-model="listparm.username"></el-input>
+        <el-input v-model="listParm.username"></el-input>
       </el-form-item>
       <el-form-item label="借书状态">
-        <el-select v-model="listparm.borrowStatus" placeholder="请选择">
+        <el-select v-model="listParm.borrowStatus" placeholder="请选择">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -17,7 +17,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button icon="el-icon-search" @click="searchBtn">查询</el-button>
+        <el-button icon="el-icon-search" @click="searchBtn">搜索</el-button>
         <el-button icon="el-icon-close" @click="resetBtn">重置</el-button>
         <el-button type="primary" icon="el-icon-edit" @click="returnBtn"
           >批量还书</el-button
@@ -61,16 +61,16 @@
         <template slot-scope="scope">
           <el-button
             type="primary"
+            icon="el-icon-edit"
             size="small"
             @click="alongReturnBtn(scope.row)"
-            icon="el-icon-edit"
             >还书</el-button
           >
           <el-button
-            type="primary"
+            type="danger"
+            icon="el-icon-edit"
             size="small"
-            @click="exceptionReturnBtn(scope.row)"
-            icon="el-icon-delete"
+            @click="ExceptioReturnBtn(scope.row)"
             >异常还书</el-button
           >
         </template>
@@ -80,25 +80,100 @@
     <el-pagination
       @size-change="sizeChange"
       @current-change="currentChange"
-      :current-page.sync="listparm.currentPage"
+      :current-page.sync="listParm.currentPage"
       :page-sizes="[10, 20, 40, 80, 100]"
-      :page-size="listparm.pageSize"
+      :page-size="listParm.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="listparm.total"
+      :total="listParm.total"
       background
     >
     </el-pagination>
+    <!-- 异常还书备注 -->
+    <sys-dialog
+      :title="dialog.title"
+      :width="dialog.width"
+      :height="dialog.height"
+      :visible="dialog.visible"
+      @onClose="onClose"
+      @onConfirm="onConfirm"
+    >
+      <div slot="content">
+        <el-form
+          :model="exception"
+          ref="exceptionRef"
+          :rules="rules"
+          label-width="80px"
+          size="small"
+        >
+          <el-form-item prop="type" label="异常类型">
+            <el-select v-model="exception.type" placeholder="请选择">
+              <el-option
+                v-for="item in exoptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="exceptionText" label="备注">
+            <el-input
+              type="textarea"
+              v-model="exception.exceptionText"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+    </sys-dialog>
   </el-main>
 </template>
 
 <script>
-import { returnBorrowApi, returnBooksApi } from "@/api/borrow";
+import SysDialog from "@/components/dialog/SysDialog.vue";
+import {
+  returnBorrowApi,
+  returnBooksApi,
+  exceptionBooksApi,
+} from "@/api/borrow";
 export default {
+  components: {
+    SysDialog,
+  },
   data() {
     return {
+      rules: {
+        type: [
+          { required: true, message: "请选择异常类型", trigger: "change" },
+        ],
+        exceptionText: [
+          { required: true, message: "请填写备注", trigger: "change" },
+        ],
+      },
+      exoptions: [
+        {
+          value: "0",
+          label: "异常还书",
+        },
+        {
+          value: "1",
+          label: "丢失",
+        },
+      ],
+      exception: {
+        borrowId: "",
+        bookId: "",
+        type: "",
+        exceptionText: "",
+      },
+      //弹框属性定义
+      dialog: {
+        width: 630,
+        height: 150,
+        title: "还书备注",
+        visible: false,
+      },
       bookIds: [],
       tableHeight: 0,
-      tableData: [],
       options: [
         {
           value: "1",
@@ -113,7 +188,8 @@ export default {
           label: "拒绝",
         },
       ],
-      listparm: {
+      tableData: [],
+      listParm: {
         currentPage: 1,
         pageSize: 10,
         username: "",
@@ -131,50 +207,64 @@ export default {
     this.returnBorrow();
   },
   methods: {
-    //异常还书
-    exceptionReturnBtn() {},
-    //单独还书
+    onConfirm() {
+      this.$refs.exceptionRef.validate(async (valid) => {
+        if (valid) {
+          let res = await exceptionBooksApi(this.exception);
+          if (res && res.code == 200) {
+            this.$message.success(res.msg);
+            this.returnBorrow();
+            this.dialog.visible = false;
+          }
+        }
+      });
+    },
+    onClose() {
+      this.dialog.visible = false;
+    },
+    //异常还书的事件
+    ExceptioReturnBtn(row) {
+      this.exception.borrowId = row.borrowId;
+      this.exception.bookId = row.bookId;
+      this.dialog.visible = true;
+    },
+    //单独还书的事件
     async alongReturnBtn(row) {
+      //前端的bug，数据如果不清空的话，第二次还书的时候会把第一次还的书再还一次
+      this.bookIds = [];
       console.log(row);
       let confirm = await this.$myconfirm("确定还书吗?");
       if (confirm) {
         if (row.borrowStatus == "1") {
-          //在借中的才能还书
+          //在借中的才能还
           let obj = {};
           obj.borrowId = row.borrowId;
           obj.bookId = row.bookId;
           this.bookIds.push(obj);
           let res = await returnBooksApi(this.bookIds);
           if (res && res.code == 200) {
-            this.$message.success(res.mes);
+            this.$message.success(res.msg);
             this.returnBorrow();
           }
         }
       }
     },
     currentChange(val) {
-      this.listParm.currentChange = val;
+      this.listParm.currentPage = val;
       this.returnBorrow();
     },
     sizeChange(val) {
       this.listParm.pageSize = val;
       this.returnBorrow();
     },
-    searchBtn() {
-      this.returnBorrow();
-    },
-    resetBtn() {
-      this.listparm.currentPage = 1;
-      this.listparm.username = "";
-      this.listparm.borrowStatus = "";
-      this.returnBorrow();
-    },
     async returnBtn() {
+      //前端的bug，数据如果不清空的话，第二次还书的时候会把第一次还的书再还一次
+      this.bookIds = [];
       let confirm = await this.$myconfirm("确定还书吗?");
       if (confirm) {
         let datas = this.$refs.tables.selection;
         if (datas.length == 0) {
-          this.$message.error("请选择要还的书");
+          this.$message.error("请选择要还的书！");
           return;
         }
         for (let i = 0; i < datas.length; i++) {
@@ -185,17 +275,26 @@ export default {
         }
         let res = await returnBooksApi(this.bookIds);
         if (res && res.code == 200) {
-          this.$message.success(res.mes);
+          this.$message.success(res.msg);
           this.returnBorrow();
         }
       }
     },
+    resetBtn() {
+      this.listParm.currentPage = 1;
+      this.listParm.username = "";
+      this.listParm.borrowStatus = "";
+      this.returnBorrow();
+    },
+    searchBtn() {
+      this.returnBorrow();
+    },
     async returnBorrow() {
-      let res = await returnBorrowApi(this.listparm);
+      let res = await returnBorrowApi(this.listParm);
       if (res && res.code == 200) {
         console.log(res);
-        this.listparm.total = res.data.total;
         this.tableData = res.data.records;
+        this.listParm.total = res.data.total;
       }
     },
   },
