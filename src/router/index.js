@@ -151,6 +151,21 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/notice',
+    component: Layout,
+    alwaysShow: true,
+    name: 'notice',
+    meta: { title: '公告管理', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: '/noticeList',
+        name: 'noticeList',
+        component: () => import('@/views/notice/noticeList'),
+        meta: { title: '公告列表', icon: 'table' }
+      }
+    ]
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
