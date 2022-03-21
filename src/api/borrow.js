@@ -19,3 +19,8 @@ export const returnBooksApi = async (parm) => {
 export const exceptionBooksApi = async(parm) =>{
     return await http.post("/api/borrow/exceptionBooks",parm)
 }
+
+//借阅查看列表
+export const getLookBorrowListApi = async(parm) =>{
+    return await http.get("/api/borrow/getLookBorrowList",parm)
+}

@@ -142,6 +142,12 @@ export const asyncRoutes = [
         name: 'bookReturn',
         component: () => import('@/views/borrow/bookReturn'),
         meta: { title: '还书管理', icon: 'table' }
+      },
+      {
+        path: '/borrowLook',
+        name: 'borrowLook',
+        component: () => import('@/views/borrow/borrowLook'),
+        meta: { title: '借阅查看', icon: 'el-icon-s-cooperation' }
       }
     ]
   },
