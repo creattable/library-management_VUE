@@ -38,3 +38,8 @@ export const editUserApi = async(parm) =>{
 export const deleteUserApi = async(parm) =>{
   return await http.delete("/api/user",parm)
 }
+
+//获取角色id
+export const getRoleListApi = async(parm) =>{
+  return await http.get("/api/user/getRoleList",parm)
+}

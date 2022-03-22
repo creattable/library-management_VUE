@@ -31,7 +31,11 @@
         <el-button icon="el-icon-close" @click="resetBtn" style="color: #ff7670"
           >重置</el-button
         >
-        <el-button type="primary" @click="addBtn" icon="el-icon-plus"
+        <el-button
+          v-permission="['sys:user:add']"
+          type="primary"
+          @click="addBtn"
+          icon="el-icon-plus"
           >新增</el-button
         >
       </el-form-item>
@@ -43,16 +47,26 @@
       <el-table-column prop="nickName" label="姓名"></el-table-column>
       <el-table-column prop="phone" label="电话"></el-table-column>
       <el-table-column prop="email" label="邮箱"></el-table-column>
-      <el-table-column label="操作" align="center" width="180">
+      <el-table-column label="操作" align="center" width="300">
         <template slot-scope="scope">
           <el-button
+            v-permission="['sys:user:edit']"
             type="primary"
             icon="el-icon-edit"
             size="small"
             @click="editBtn(scope.row)"
             >编辑</el-button
           >
+           <el-button
+            v-permission="['sys:user:resetpassword']"
+            type="danger"
+            icon="el-icon-edit"
+            size="small"
+            @click="resetPasswordBtn(scope.row)"
+            >重置密码</el-button
+          >
           <el-button
+            v-permission="['sys:user:delete']"
             type="danger"
             icon="el-icon-edit"
             size="small"
@@ -143,6 +157,21 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <el-row>
+            <el-col :span="12" :offset="0">
+              <el-form-item prop="username" label="角色">
+                <el-select v-model="addModel.roleId" placeholder="请选择">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.roleId"
+                    :label="item.roleName"
+                    :value="item.roleId"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
       </div>
     </sys-dialog>
@@ -150,7 +179,15 @@
 </template>
 
 <script>
-import { addUserApi, editUserApi, getListApi, deleteUserApi } from "@/api/user";
+import {
+  addUserApi,
+  editUserApi,
+  getListApi,
+  deleteUserApi,
+  getRoleListApi,
+  getRoleIdApi,
+  resetPasswordApi
+} from "@/api/user";
 //引入弹框组件
 import SysDialog from "@/components/dialog/SysDialog.vue";
 export default {
@@ -160,6 +197,7 @@ export default {
   },
   data() {
     return {
+      options: [],
       //表单验证规则
       rules: {
         nickName: [
@@ -200,6 +238,7 @@ export default {
       },
       //表单绑定的数据
       addModel: {
+        roleId: "",
         type: "", // 0:新增 1：编辑
         userId: "",
         nickName: "",
@@ -214,7 +253,7 @@ export default {
         title: "",
         visible: false,
         width: 630,
-        height: 200,
+        height: 230,
       },
       //表格的高度
       tableHeight: 0,
@@ -232,8 +271,28 @@ export default {
   },
   created() {
     this.getList();
+    this.getRoleList();
   },
   methods: {
+    async resetPasswordBtn(row) {
+      let confirm = await this.$myconfirm("确定重置密码吗，重置之后默认密码为【666666】?");
+      if (confirm) {
+        console.log(row);
+        let res = await resetPasswordApi({
+          userId: row.userId,
+        });
+        if (res && res.code == 200) {
+          this.$message.success(res.msg);
+        }
+      }
+    },
+    async getRoleId(userId) {
+      let res = await getRoleIdApi({ userId: userId });
+      if (res && res.code == 200) {
+        console.log(res);
+        this.addModel.roleId = res.data.roleId;
+      }
+    },
     //重置按钮
     resetBtn() {
       this.listParm.nickName = "";
@@ -315,6 +374,7 @@ export default {
       this.$objCoppy(row, this.addModel);
       //设置编辑
       this.addModel.type = "1";
+      this.getRoleId(row.userId);
     },
     //新增按钮
     addBtn() {
@@ -325,6 +385,13 @@ export default {
       this.$resetForm("addRef", this.addModel);
       //设置为新增
       this.addModel.type = "0";
+    },
+    async getRoleList() {
+      let res = await getRoleListApi();
+      console.log(res);
+      if (res && res.code == 200) {
+        this.options = res.data;
+      }
     },
   },
   mounted() {
