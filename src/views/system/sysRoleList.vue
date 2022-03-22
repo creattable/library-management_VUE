@@ -23,12 +23,14 @@
       <el-table-column prop="roleName" label="角色名称"></el-table-column>
       <el-table-column prop="roleType" label="角色类型">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.roleType == '1'">系统用户</el-tag>
-          <el-tag v-if="scope.row.roleType == '2'" type="success">读者角色</el-tag>
+          <el-tag v-if="scope.row.roleType == '1'">系统角色</el-tag>
+          <el-tag v-if="scope.row.roleType == '2'" type="success"
+            >读者角色</el-tag
+          >
         </template>
       </el-table-column>
       <el-table-column prop="remark" label="角色备注"></el-table-column>
-      <el-table-column label="操作" align="center" width="180">
+      <el-table-column label="操作" align="center" width="300">
         <template slot-scope="scope">
           <el-button
             type="primary"
@@ -43,6 +45,13 @@
             icon="el-icon-delete"
             @click="deleteBtn(scope.row)"
             >删除</el-button
+          >
+          <el-button
+            type="primary"
+            size="small"
+            icon="el-icon-edit"
+            @click="assignBtn(scope.row)"
+            >分配权限</el-button
           >
         </template>
       </el-table-column>
@@ -95,7 +104,6 @@
               </el-form-item>
             </el-col>
           </el-row>
-
           <el-row>
             <el-col :span="12" :offset="0">
               <el-form-item label="角色备注">
@@ -106,12 +114,41 @@
         </el-form>
       </div>
     </sys-dialog>
+    <!-- 分配权限的弹框 -->
+    <sys-dialog
+      :title="assignDialog.title"
+      :visible="assignDialog.visible"
+      :width="assignDialog.width"
+      :height="assignDialog.height"
+      @onConfirm="assignConfirm"
+      @onClose="assignClose"
+    >
+      <div slot="content">
+        <el-tree
+          ref="assignTree"
+          :data="assignTreeData"
+          node-key="menuId"
+          :props="defaultProps"
+          empty-text="暂无数据"
+          :show-checkbox="true"
+          default-expand-all
+          :default-checked-keys="assignTreeChecked"
+        ></el-tree>
+      </div>
+    </sys-dialog>
   </el-main>
 </template>
 
 <script>
 import SysDialog from "@/components/dialog/SysDialog.vue";
-import { getListApi, addRoleApi, editRoleApi, deleteRoleApi } from "@/api/role";
+import {
+  getListApi,
+  addRoleApi,
+  editRoleApi,
+  deleteRoleApi,
+  getAssingShowApi,
+  saveAssignApi,
+} from "@/api/role";
 export default {
   // 注册组件
   components: {
@@ -119,7 +156,10 @@ export default {
   },
   data() {
     return {
-      //新增里的用户类型下拉框选择
+      defaultProps: {
+        children: "children",
+        label: "title",
+      },
       options: [
         {
           value: "1",
@@ -127,10 +167,9 @@ export default {
         },
         {
           value: "2",
-          label: "读者用户",
+          label: "读者",
         },
       ],
-
       //表单验证
       rules: {
         roleName: [
@@ -165,6 +204,18 @@ export default {
         total: 0,
       },
       tableData: [],
+      //角色Id
+      roleId: "",
+      //树数据
+      assignTreeData: [],
+      //角色原来的权限
+      assignTreeChecked: [],
+      assignDialog: {
+        title: "",
+        visible: false,
+        width: 300,
+        height: 450,
+      },
     };
   },
   mounted() {
@@ -176,6 +227,70 @@ export default {
     this.getList();
   },
   methods: {
+    assignClose() {
+      this.assignDialog.visible = false;
+    },
+    async assignConfirm() {
+      //获取树选中的数据
+      let ids = this.$refs.assignTree
+        .getCheckedKeys()
+        .concat(this.$refs.assignTree.getHalfCheckedKeys());
+      console.log(ids);
+      let parm = {
+        roleId: this.roleId,
+        list: ids,
+      };
+      let res = await saveAssignApi(parm);
+      if (res && res.code == 200) {
+         this.$message({ type: "success", message: res.msg });
+        this.assignDialog.visible = false;
+      }
+    },
+    async assignBtn(row) {
+      //清空数据
+      this.roleId = "";
+      this.assignTreeData = [];
+      this.assignTreeChecked = [];
+      this.roleId = row.roleId;
+      //设置弹框属性
+      this.assignDialog.title = "为【" + row.roleName + "】分配权限";
+      this.assignDialog.visible = true;
+      //获取权限数据
+      let parm = {
+        userId: "3",
+        roleId: this.roleId,
+      };
+      let res = await getAssingShowApi(parm);
+      console.log(res);
+      if (res && res.code == 200) {
+        this.assignTreeData = res.data.menuList;
+        this.assignTreeChecked = res.data.checkList;
+      }
+      //如果角色原来有权限
+      if (this.assignTreeChecked.length > 0) {
+        let newArr = [];
+        this.assignTreeChecked.forEach((item) => {
+          this.checked(item, this.assignTreeData, newArr);
+        });
+        this.assignTreeChecked = newArr;
+      }
+    },
+    //找出所有的回显数据
+    checked(id, data, newArr) {
+      data.forEach((item) => {
+        if (item.menuId == id) {
+          
+          //是不是末级
+          if (item.children && item.children.length == 0) {
+            newArr.push(item.menuId);
+          }
+        } else {
+          if (item.children && item.children.length != 0) {
+            this.checked(id, item.children, newArr);
+          }
+        }
+      });
+    },
     //弹框确定
     onConfirm() {
       //表单验证
@@ -253,7 +368,7 @@ export default {
       this.dialog.title = "新增角色";
       //清空表单数据
       this.$resetForm("addRef", this.addModel);
-      //设为新增
+      //
       this.addModel.type = "0";
     },
     //重置按钮

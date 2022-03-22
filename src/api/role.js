@@ -15,3 +15,7 @@ export const editRoleApi = async(parm) =>{
 export const deleteRoleApi = async(parm) =>{
     return await http.delete("/api/role",parm)
 }
+//
+export const getAssingShowApi = async(parm) =>{
+    return await http.get("/api/role/getAssingShow",parm)
+}
