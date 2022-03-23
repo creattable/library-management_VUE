@@ -32,13 +32,16 @@ const mutations = {
 }
 
 const actions = {
-  // user login
+  // user login vuex里面的用户登录
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
+      //这里调用的是，api里面的user.js模块里面的login方法
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
+        //登录成功之后，把token存到vuex里面
         commit('SET_TOKEN', data.token)
+        //还把token存到了cookies里面
         setToken(data.token)
         resolve()
       }).catch(error => {
@@ -47,6 +50,7 @@ const actions = {
     })
   },
 
+  //获取用户的权限信息
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {

@@ -105,11 +105,16 @@ export default {
         this.$refs.password.focus()
       })
     },
+    //登录按钮的事件
     handleLogin() {
+      //登录表单验证
       this.$refs.loginForm.validate(valid => {
+        //返回true的时候说明验证通过
         if (valid) {
           this.loading = true
+          //这里调用的是来自于vuex里面的,src->store->modules->user里面的login方法
           this.$store.dispatch('user/login', this.loginForm).then(() => {
+            //跳转路由，默认跳转到了首页，进入到了权限验证的流程图
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {

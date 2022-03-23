@@ -242,7 +242,7 @@ export default {
       };
       let res = await saveAssignApi(parm);
       if (res && res.code == 200) {
-         this.$message({ type: "success", message: res.msg });
+        this.$message({ type: "success", message: res.msg });
         this.assignDialog.visible = false;
       }
     },
@@ -257,7 +257,7 @@ export default {
       this.assignDialog.visible = true;
       //获取权限数据
       let parm = {
-        userId: "3",
+        userId: "9",
         roleId: this.roleId,
       };
       let res = await getAssingShowApi(parm);
@@ -279,7 +279,6 @@ export default {
     checked(id, data, newArr) {
       data.forEach((item) => {
         if (item.menuId == id) {
-          
           //是不是末级
           if (item.children && item.children.length == 0) {
             newArr.push(item.menuId);
