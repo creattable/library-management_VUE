@@ -1,11 +1,17 @@
 import request from '@/utils/request'
 import http from '@/utils/http'
-export function login(data) {
-  return request({
-    url: '/vue-admin-template/user/login',
-    method: 'post',
-    data
-  })
+//这个login才是真正需要对接的地方
+//此登录，mock.js数据，实际开发中，会调用后端接口
+// export function login(data) {
+//   return request({
+//     url: '/vue-admin-template/user/login',
+//     method: 'post',
+//     data
+//   })
+// }
+
+export const loginApi = async (parm) => {
+  return await http.post("/api/system/login", parm)
 }
 
 export function getInfo(token) {
@@ -23,28 +29,28 @@ export function logout() {
   })
 }
 //获取用户列表
-export const getListApi = async(parm) =>{
-  return await http.get("/api/user/list",parm)
+export const getListApi = async (parm) => {
+  return await http.get("/api/user/list", parm)
 }
 //新增
-export const addUserApi = async(parm) =>{
-  return await http.post("/api/user",parm)
+export const addUserApi = async (parm) => {
+  return await http.post("/api/user", parm)
 }
 //编辑
-export const editUserApi = async(parm) =>{
-  return await http.put("/api/user",parm)
+export const editUserApi = async (parm) => {
+  return await http.put("/api/user", parm)
 }
 //删除
-export const deleteUserApi = async(parm) =>{
-  return await http.delete("/api/user",parm)
+export const deleteUserApi = async (parm) => {
+  return await http.delete("/api/user", parm)
 }
 
 //获取角色id
-export const getRoleListApi = async(parm) =>{
-  return await http.get("/api/user/getRoleList",parm)
+export const getRoleListApi = async (parm) => {
+  return await http.get("/api/user/getRoleList", parm)
 }
 
 //根据用户id查询角色
-export const getRoleIdApi = async(parm) =>{
-  return await http.get("/api/user/getRoleId",parm)
+export const getRoleIdApi = async (parm) => {
+  return await http.get("/api/user/getRoleId", parm)
 }

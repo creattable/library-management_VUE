@@ -140,7 +140,7 @@
                 <el-input v-model="addModel.idCard"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12" :offset="0">
+            <el-col v-if="addModel.type == '0'" :span="12" :offset="0">
               <el-form-item prop="password" label="密码">
                 <el-input v-model="addModel.password"></el-input>
               </el-form-item>
@@ -271,7 +271,7 @@ export default {
     },
     //删除按钮
     async deleteBtn(row) {
-      let confirm =  await this.$myconfirm("确定删除该数据吗?");
+      let confirm = await this.$myconfirm("确定删除该数据吗?");
       if (confirm) {
         let res = await deleteReaderApi({ readerId: row.readerId });
         if (res && res.code == 200) {
@@ -304,15 +304,15 @@ export default {
     },
     //重置按钮
     resetBtn() {
-      this.listParm.username = ''
-      this.listParm.idCard = ''
-      this.listParm.learnNum = ''
-      this.listParm.phone = ''
-      this.getList()
+      this.listParm.username = "";
+      this.listParm.idCard = "";
+      this.listParm.learnNum = "";
+      this.listParm.phone = "";
+      this.getList();
     },
     //搜索按钮
     searchBtn() {
-      this.getList()
+      this.getList();
     },
   },
 };

@@ -1,5 +1,5 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { loginApi, logout, getInfo } from '@/api/user'
+import { getToken, setToken, removeToken, setUserId } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
@@ -34,15 +34,18 @@ const mutations = {
 const actions = {
   // user login vuex里面的用户登录
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
+    const { username, password, userType } = userInfo
     return new Promise((resolve, reject) => {
       //这里调用的是，api里面的user.js模块里面的login方法
-      login({ username: username.trim(), password: password }).then(response => {
+      loginApi({ username: username.trim(), password: password, userType: userType }).then(response => {
         const { data } = response
+        console.log('登录成功')
+        console.log(data)
         //登录成功之后，把token存到vuex里面
         commit('SET_TOKEN', data.token)
         //还把token存到了cookies里面
         setToken(data.token)
+        setUserId(data.userId)
         resolve()
       }).catch(error => {
         reject(error)
