@@ -1,5 +1,5 @@
 import { loginApi, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken, setUserId } from '@/utils/auth'
+import { getToken, setToken, removeToken, setUserId, getUserId } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
@@ -57,7 +57,9 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      getInfo({ userId: getUserId() }).then(response => {
+        console.log("获取用户权限字段")
+        console.log(response)
         const { data } = response
 
         if (!data) {

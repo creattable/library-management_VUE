@@ -14,12 +14,16 @@ export const loginApi = async (parm) => {
   return await http.post("/api/system/login", parm)
 }
 
-export function getInfo(token) {
-  return request({
-    url: '/vue-admin-template/user/info',
-    method: 'get',
-    params: { token }
-  })
+// export function getInfo(token) {
+//   return request({
+//     url: '/vue-admin-template/user/info',
+//     method: 'get',
+//     params: { token }
+//   })
+// }
+
+export const getInfo = async (parm) => {
+  return await http.get("/api/system/getInfo", parm)
 }
 
 export function logout() {
