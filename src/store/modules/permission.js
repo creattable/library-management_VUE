@@ -1,4 +1,6 @@
-import { asyncRoutes, constantRoutes } from '@/router'
+import { constantRoutes } from '@/router'
+import Layout from '@/layout'
+import { getMenuListApi } from '@/api/user'
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -18,12 +20,37 @@ function hasPermission(roles, route) {
  * @param routes asyncRoutes
  * @param roles
  */
+// export function filterAsyncRoutes(routes, roles) {
+//   const res = []
+
+//   routes.forEach(route => {
+//     const tmp = { ...route }
+//     if (hasPermission(roles, tmp)) {
+//       if (tmp.children) {
+//         tmp.children = filterAsyncRoutes(tmp.children, roles)
+//       }
+//       res.push(tmp)
+//     }
+//   })
+
+//   return res
+// }
+
 export function filterAsyncRoutes(routes, roles) {
   const res = []
-
   routes.forEach(route => {
     const tmp = { ...route }
     if (hasPermission(roles, tmp)) {
+      //动态找到页面路径
+      const component = tmp.component;
+      if (component) {
+        //判断是否是一级菜单
+        if (component == 'Layout') {
+          tmp.component = Layout;
+        } else {
+          tmp.component = (resolve) => require([`@/views${component}`], resolve)
+        }
+      }
       if (tmp.children) {
         tmp.children = filterAsyncRoutes(tmp.children, roles)
       }
@@ -50,14 +77,22 @@ const actions = {
   generateRoutes({ commit }, roles) {
     return new Promise(resolve => {
       //accessedRoutes对接后端接口之后，返回的菜单数据
-      let accessedRoutes
-      if (roles.includes('admin')) {
-        accessedRoutes = asyncRoutes || []
-      } else {
-        accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
-      }
-      commit('SET_ROUTES', accessedRoutes)
-      resolve(accessedRoutes)
+      getMenuListApi().then(res => {
+        console.log('获取菜单')
+        console.log(res)
+        let accessedRoutes = filterAsyncRoutes(res.data, roles)
+        commit('SET_ROUTES', accessedRoutes)
+        resolve(accessedRoutes)
+      })
+
+      // let accessedRoutes
+      // if (roles.includes('admin')) {
+      //   accessedRoutes = asyncRoutes || []
+      // } else {
+      //   accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
+      // }
+      // commit('SET_ROUTES', accessedRoutes)
+      // resolve(accessedRoutes)
     })
   }
 }

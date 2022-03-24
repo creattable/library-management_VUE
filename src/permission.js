@@ -49,6 +49,10 @@ router.beforeEach(async (to, from, next) => {
           //动态的生成菜单和路由，很关键！！！
           //src\store\modules\permission.js
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+          console.log('生成动态路由')
+          console.log(accessRoutes)
+          let obj = { path: '*', redirect: '/404', hidden: true };
+          accessRoutes.push(obj)
 
           // dynamically add accessible routes
           //动态生成路由
@@ -58,6 +62,7 @@ router.beforeEach(async (to, from, next) => {
           // set the replace: true, so the navigation will not leave a history record
           next({ ...to, replace: true })
         } catch (error) {
+          console.log('进入异常')
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
           // Message.error(error || 'Has Error')

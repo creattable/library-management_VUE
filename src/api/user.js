@@ -58,3 +58,8 @@ export const getRoleListApi = async (parm) => {
 export const getRoleIdApi = async (parm) => {
   return await http.get("/api/user/getRoleId", parm)
 }
+
+//获取用户的菜单
+export const getMenuListApi = async () => {
+  return await http.get("/api/system/getMenuList", null)
+}
