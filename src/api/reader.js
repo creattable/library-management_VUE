@@ -19,3 +19,7 @@ export const deleteReaderApi=async(parm) =>{
 export const getByUserNameApi = async(parm) =>{
     return await http.get("/api/reader/getByUserName",parm)
 }
+//读者注册
+export const registerApi = async(parm) =>{
+    return await http.post("/api/reader/register",parm)
+}
