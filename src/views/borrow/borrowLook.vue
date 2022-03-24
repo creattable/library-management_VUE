@@ -57,20 +57,13 @@
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" @click="searchBtn">搜索</el-button>
-        <el-button style="color: #ff7670" icon="el-icon-close" @click="resetBtn"
+        <el-button style="color: #ff7670" @click="resetBtn" icon="el-icon-close"
           >重置</el-button
         >
       </el-form-item>
     </el-form>
     <!-- 表格 -->
-    <el-table
-      size="small"
-      ref="tables"
-      :height="tableHeight"
-      :data="tableData"
-      border
-      stripe
-    >
+    <el-table :height="tableHeight" :data="tableData" border stripe>
       <el-table-column type="selection" width="55"> </el-table-column>
       <el-table-column prop="bookName" label="图书名称"> </el-table-column>
       <el-table-column prop="bookPlaceNum" label="书架号"> </el-table-column>
@@ -89,6 +82,9 @@
         width="100"
       >
         <template slot-scope="scope">
+          <el-tag type="danger" v-if="scope.row.borrowStatus == '0'"
+            >审核中</el-tag
+          >
           <el-tag v-if="scope.row.borrowStatus == '1'">在借中</el-tag>
           <el-tag type="success" v-if="scope.row.borrowStatus == '2'"
             >已还</el-tag
@@ -129,27 +125,97 @@
           >
         </template>
       </el-table-column>
+      <el-table-column label="操作" align="center" width="220">
+        <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.applyStatus == '0'"
+            v-permission="['sys:borrowLook:apply']"
+            icon="el-icon-edit"
+            type="primary"
+            size="small"
+            @click="applyBtn(scope.row)"
+            >同意借阅</el-button
+          >
+          <el-button
+            v-permission="['sys:borrowLook:addTime']"
+            icon="el-icon-plus"
+            type="primary"
+            size="small"
+            @click="addTimeBtn(scope.row)"
+            >续期</el-button
+          >
+        </template>
+      </el-table-column>
     </el-table>
     <!-- 分页 -->
     <el-pagination
       @size-change="sizeChange"
       @current-change="currentChange"
       :current-page.sync="lookParm.currentPage"
-      :page-sizes="[10, 20, 40, 80, 100]"
+      :page-sizes="[7, 20, 40, 80, 100]"
       :page-size="lookParm.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="lookParm.total"
       background
     >
     </el-pagination>
+    <!-- 续期弹框 -->
+    <sys-dialog
+      :title="dialog.title"
+      :visible="dialog.visible"
+      :width="dialog.width"
+      :height="dialog.height"
+      @onConfirm="onConfirm"
+      @onClose="onClose"
+    >
+      <div slot="content">
+        <el-form
+          :model="addTime"
+          ref="addTime"
+          :rules="rules"
+          label-width="80px"
+          :inline="false"
+          size="small"
+        >
+          <el-form-item prop="returnTime" label="还书时间">
+            <el-date-picker
+              v-model="addTime.returnTime"
+              type="date"
+              placeholder="选择还书时间"
+            >
+            </el-date-picker>
+          </el-form-item>
+        </el-form>
+      </div>
+    </sys-dialog>
   </el-main>
 </template>
 
 <script>
-import { getLookBorrowListApi } from "@/api/borrow";
+import SysDialog from "@/components/dialog/SysDialog.vue";
+import { getUserId } from "@/utils/auth";
+import { getLookBorrowListApi, applyBookApi, addTimeApi } from "@/api/borrow";
 export default {
+  components: {
+    SysDialog,
+  },
   data() {
     return {
+      rules: {
+        addTime: [
+          { required: true, message: "请选择还书时间", trigger: "blur" },
+        ],
+      },
+      addTime: {
+        borrowId: "",
+        returnTime: "",
+      },
+      dialog: {
+        title: "借书续期",
+        visible: false,
+        width: 650,
+        height: 150,
+      },
       tableHeight: 0,
       tableData: [],
       applytions: [
@@ -201,9 +267,10 @@ export default {
         },
       ],
       lookParm: {
+        userId: getUserId(),
         total: 0,
         currentPage: 1,
-        pageSize: 10,
+        pageSize: 7,
         username: "",
         learnNum: "",
         bookName: "",
@@ -216,33 +283,65 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.tableHeight = window.innerHeight - 220;
+      this.tableHeight = window.innerHeight - 250;
     });
   },
   created() {
     this.getLookBorrowList();
   },
   methods: {
+    onClose() {
+      this.dialog.visible = false;
+    },
+    onConfirm() {
+      this.$refs.addTime.validate(async (valid) => {
+        if (valid) {
+          let res = await addTimeApi(this.addTime);
+          if (res && res.code == 200) {
+            this.$message.success(res.msg);
+            this.getLookBorrowList();
+            this.dialog.visible = false;
+          }
+        }
+      });
+    },
+    //借书续期
+    addTimeBtn(row) {
+      console.log(row);
+      this.addTime.borrowId = row.borrowId;
+      this.dialog.visible = true;
+    },
+    async applyBtn(row) {
+      console.log(row);
+      let confirm = await this.$myconfirm("确定审核吗?");
+      if (confirm) {
+        let res = await applyBookApi({ borrowId: row.borrowId });
+        if (res && res.code == 200) {
+          this.$message.success(res.msg);
+          this.getLookBorrowList();
+        }
+      }
+    },
     searchBtn() {
       this.getLookBorrowList();
     },
     resetBtn() {
       //清空表单
-      (this.lookParm.username = ""),
-        (this.lookParm.learnNum = ""),
-        (this.lookParm.bookName = ""),
-        (this.lookParm.applyStatus = ""),
-        (this.lookParm.borrowStatus = ""),
-        (this.lookParm.returnStatus = ""),
-        (this.lookParm.timeStatus = ""),
-        this.getLookBorrowList();
+      this.lookParm.username = "";
+      this.lookParm.learnNum = "";
+      this.lookParm.bookName = "";
+      this.lookParm.applyStatus = "";
+      this.lookParm.borrowStatus = "";
+      this.lookParm.returnStatus = "";
+      this.lookParm.timeStatus = "";
+      this.getLookBorrowList();
     },
     currentChange(val) {
-      this.lookParm.currentChange = val;
+      this.lookParm.currentPage = val;
       this.getLookBorrowList();
     },
     sizeChange(val) {
-      this.lookParm.sizeChange = val;
+      this.lookParm.pageSize = val;
       this.getLookBorrowList();
     },
     async getLookBorrowList() {
@@ -256,5 +355,5 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style>
 </style>

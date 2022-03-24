@@ -51,7 +51,9 @@
       </el-table-column>
       <el-table-column prop="sex" label="审核状态">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.checkStatus == '0'">未审核</el-tag>
+          <el-tag type="danger" v-if="scope.row.checkStatus == '0'"
+            >未审核</el-tag
+          >
           <el-tag v-if="scope.row.checkStatus == '1'">已审核</el-tag>
         </template>
       </el-table-column>
@@ -61,7 +63,7 @@
           <el-tag v-if="scope.row.userStatus == '1'">启用</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="350">
         <template slot-scope="scope">
           <el-button
             icon="el-icon-edit"
@@ -69,6 +71,13 @@
             size="small"
             @click="editBtn(scope.row)"
             >编辑</el-button
+          >
+          <el-button
+            icon="el-icon-edit"
+            type="primary"
+            size="small"
+            @click="applyBtn(scope.row)"
+            >审核通过</el-button
           >
           <el-button
             icon="el-icon-delete"
@@ -169,6 +178,7 @@ import {
   addReaderApi,
   editReaderApi,
   deleteReaderApi,
+  applyReaderApi,
 } from "@/api/reader";
 export default {
   //注册组件
@@ -232,6 +242,20 @@ export default {
     this.getList();
   },
   methods: {
+    //审核按钮
+    async applyBtn(row) {
+      let confirm = await this.$myconfirm("确定审核通过吗?");
+      if (confirm) {
+        console.log(row);
+        let res = await applyReaderApi({ readerId: row.readerId });
+        if (res && res.code == 200) {
+          this.$message.success(res.msg);
+          //刷新表格
+          this.getList();
+          this.dialog.visible = false;
+        }
+      }
+    },
     //弹框确定
     onConfirm() {
       this.$refs.addRef.validate(async (valid) => {

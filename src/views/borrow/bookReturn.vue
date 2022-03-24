@@ -48,6 +48,7 @@
         width="100"
       >
         <template slot-scope="scope">
+          <el-tag type="danger" v-if="scope.row.borrowStatus == '0'">审核中</el-tag>
           <el-tag v-if="scope.row.borrowStatus == '1'">在借中</el-tag>
           <el-tag type="success" v-if="scope.row.borrowStatus == '2'"
             >已还</el-tag
@@ -175,6 +176,10 @@ export default {
       bookIds: [],
       tableHeight: 0,
       options: [
+        {
+          value: "0",
+          label: "审核中",
+        },
         {
           value: "1",
           label: "在借中",
