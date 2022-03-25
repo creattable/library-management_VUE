@@ -30,3 +30,7 @@ export function getUserId() {
 export function removeUserId() {
   return Cookies.remove("userId")
 }
+//sessionStorage清空，token失效后记得清空
+export function clearSession(){
+  return sessionStorage.clear()
+}

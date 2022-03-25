@@ -13,7 +13,11 @@
         <el-button icon="el-icon-close" style="color: #ff7670" @click="resetBtn"
           >重置</el-button
         >
-        <el-button type="primary" icon="el-icon-plus" @click="addBtn"
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          @click="addBtn"
+          v-permission="['sys:bookCategory:add']"
           >新增</el-button
         >
       </el-form-item>
@@ -29,6 +33,7 @@
             size="small"
             icon="el-icon-edit"
             @click="editBtn(scope.row)"
+            v-permission="['sys:bookCategory:edit']"
             >编辑</el-button
           >
           <el-button
@@ -36,6 +41,7 @@
             size="small"
             icon="el-icon-delete"
             @click="deleteBtn(scope.row)"
+            v-permission="['sys:bookCategory:delete']"
             >删除</el-button
           >
         </template>
@@ -181,8 +187,8 @@ export default {
     },
     //页数改变时触发事件
     currentChange(val) {
-      this.listParm. currentPage=val
-      this.getList()
+      this.listParm.currentPage = val;
+      this.getList();
     },
     //页容量改动时触发事件
     sizeChange(val) {
@@ -226,8 +232,8 @@ export default {
     //重置按钮
     resetBtn() {
       //清空表单
-      this.listParm.categoryName=''
-      this.getList()
+      this.listParm.categoryName = "";
+      this.getList();
     },
     //搜索按钮
     searchBtn() {

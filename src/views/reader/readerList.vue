@@ -31,7 +31,7 @@
         <el-button style="color: #ff7670" icon="el-icon-close" @click="resetBtn"
           >重置</el-button
         >
-        <el-button type="primary" icon="el-icon-plus" @click="addBtn"
+        <el-button v-permission="['sys:reader:add']" type="primary" icon="el-icon-plus" @click="addBtn"
           >新增</el-button
         >
       </el-form-item>
@@ -66,6 +66,7 @@
       <el-table-column label="操作" width="350">
         <template slot-scope="scope">
           <el-button
+          v-permission="['sys:reader:edit']"
             icon="el-icon-edit"
             type="primary"
             size="small"
@@ -73,6 +74,7 @@
             >编辑</el-button
           >
           <el-button
+          v-permission="['sys:reader:apply']"
             icon="el-icon-edit"
             type="primary"
             size="small"
@@ -80,6 +82,7 @@
             >审核通过</el-button
           >
           <el-button
+          v-permission="['sys:reader:delete']"
             icon="el-icon-delete"
             type="danger"
             size="small"

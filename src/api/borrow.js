@@ -16,16 +16,21 @@ export const returnBooksApi = async (parm) => {
 }
 
 //异常还书
-export const exceptionBooksApi = async(parm) =>{
-    return await http.post("/api/borrow/exceptionBooks",parm)
+export const exceptionBooksApi = async (parm) => {
+    return await http.post("/api/borrow/exceptionBooks", parm)
 }
 
 //借阅查看列表
-export const getLookBorrowListApi = async(parm) =>{
-    return await http.get("/api/borrow/getLookBorrowList",parm)
+export const getLookBorrowListApi = async (parm) => {
+    return await http.get("/api/borrow/getLookBorrowList", parm)
 }
 
 //借阅审核
-export const applyBookApi = async(parm) =>{
-    return await http.post("/api/borrow/applyBook",parm)
+export const applyBookApi = async (parm) => {
+    return await http.post("/api/borrow/applyBook", parm)
+}
+
+//还书续期
+export const addTimeApi = async (parm) => {
+    return await http.post("/api/borrow/addTime", parm)
 }

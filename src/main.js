@@ -27,6 +27,9 @@ Vue.prototype.$objCoppy = objCoppy;
 //表格穿梭框
 import eltTransfer from 'elt-transfer'
 Vue.use(eltTransfer)
+// 权限框架注册全局
+import permission from '@/permission/index.js' // 权限判断指令
+Vue.use(permission)
 
 /**
  * If you don't want to use mock-server

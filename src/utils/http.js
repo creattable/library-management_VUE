@@ -50,11 +50,11 @@ service.interceptors.response.use(
 
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 200) {
-      Message({
-        message: res.msg || '服务器出错',
-        type: 'error',
-        duration: 5 * 1000
-      })
+      // Message({
+      //   message: res.msg || '服务器出错',
+      //   type: 'error',
+      //   duration: 5 * 1000
+      // })
 
       //600是token过期或token验证失败 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 600) {

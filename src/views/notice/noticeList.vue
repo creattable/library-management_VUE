@@ -10,7 +10,7 @@
         <el-button icon="el-icon-close" @click="resetBtn" style="color: #ff7670"
           >重置</el-button
         >
-        <el-button type="primary" icon="el-icon-plus" @click="addBtn"
+        <el-button type="primary" icon="el-icon-plus" @click="addBtn" v-permission="['sys:noticeList:add']"
           >新增</el-button
         >
       </el-form-item>
@@ -33,6 +33,7 @@
             size="small"
             icon="el-icon-edit"
             @click="editBtn(scope.row)"
+            v-permission="['sys:noticeList:edit']"
             >编辑</el-button
           >
           <el-button
@@ -40,6 +41,7 @@
             icon="el-icon-delete"
             size="small"
             @click="deleteBtn(scope.row)"
+            v-permission="['sys:noticeList:delete']"
             >删除</el-button
           >
         </template>

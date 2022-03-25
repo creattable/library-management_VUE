@@ -36,7 +36,7 @@
         <el-button style="color: #ff7670" icon="el-icon-close" @click="resetBtn"
           >重置</el-button
         >
-        <el-button type="primary" icon="el-icon-plus" @click="addBtn"
+        <el-button type="primary" icon="el-icon-plus" @click="addBtn" v-permission="['sys:bookList:add']"
           >新增</el-button
         >
       </el-form-item>
@@ -57,6 +57,7 @@
             type="primary"
             size="small"
             @click="editBtn(scope.row)"
+            v-permission="['sys:bookList:edit']"
             >编辑</el-button
           >
           <el-button
@@ -64,6 +65,7 @@
             icon="el-icon-delete"
             size="small"
             @click="deleteBtn(scope.row)"
+            v-permission="['sys:bookList:delete']"
             >删除</el-button
           >
         </template>

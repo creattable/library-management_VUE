@@ -2,7 +2,11 @@
   <el-main>
     <el-form size="small">
       <el-form-item>
-        <el-button @click="addBtn" type="primary" icon="el-icon-plus"
+        <el-button
+          @click="addBtn"
+          type="primary"
+          icon="el-icon-plus"
+          v-permission="['sys:menu:add']"
           >新增</el-button
         >
       </el-form-item>
@@ -32,9 +36,11 @@
       </el-table-column>
       <el-table-column prop="name" label="路由名称"> </el-table-column>
       <el-table-column prop="path" label="路由地址"> </el-table-column>
+      <el-table-column prop="code" label="权限字段"> </el-table-column>
       <el-table-column label="操作" align="center" width="180">
         <template slot-scope="scope">
           <el-button
+            v-permission="['sys:menu:edit']"
             type="primary"
             icon="el-icon-edit"
             size="small"
@@ -42,6 +48,7 @@
             >编辑</el-button
           >
           <el-button
+            v-permission="['sys:menu:delete']"
             type="danger"
             icon="el-icon-delete"
             size="small"
