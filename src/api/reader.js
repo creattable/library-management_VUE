@@ -27,3 +27,11 @@ export const registerApi = async (parm) => {
 export const applyReaderApi = async (parm) => {
     return await http.put("/api/reader/applyReader", parm)
 }
+//读者总数
+export const getReaderCountApi = async (parm) => {
+    return await http.get("/api/reader/getReaderCount", parm)
+}
+//读者待审核总数
+export const getApplyReaderCountApi = async (parm) => {
+    return await http.get("/api/reader/getApplyReaderCount", parm)
+}

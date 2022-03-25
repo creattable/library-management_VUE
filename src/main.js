@@ -30,6 +30,8 @@ Vue.use(eltTransfer)
 // 权限框架注册全局
 import permission from '@/permission/index.js' // 权限判断指令
 Vue.use(permission)
+import * as echarts from 'echarts';
+Vue.prototype.$echarts = echarts
 
 /**
  * If you don't want to use mock-server

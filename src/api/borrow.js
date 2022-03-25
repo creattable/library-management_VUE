@@ -34,3 +34,14 @@ export const applyBookApi = async (parm) => {
 export const addTimeApi = async (parm) => {
     return await http.post("/api/borrow/addTime", parm)
 }
+
+//借书待审核总数
+export const getBorrowApplyCountApi = async (parm) => {
+    return await http.get("/api/borrow/getBorrowApplyCount", parm)
+}
+
+//到期待还总数
+export const getBorrowReturnCountApi = async (parm) => {
+    return await http.get("/api/borrow/getBorrowReturnCount", parm)
+}
+

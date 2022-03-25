@@ -33,12 +33,12 @@
         <span
           @click="registerBtn"
           style="
-            margin-right: 10px;
-            float: right;
             color: #ff7670;
+            float: right;
+            margin-right: 15px;
             cursor: pointer;
           "
-          >读者注册</span
+          >无账号，读者注册</span
         >
       </el-form-item>
       <el-form-item>
@@ -57,9 +57,9 @@
     <!-- 注册弹框 -->
     <sys-dialog
       :title="dialog.title"
-      :visible="dialog.visible"
-      :height="dialog.height"
       :width="dialog.width"
+      :height="dialog.height"
+      :visible="dialog.visible"
       @onClose="onClose"
       @onConfirm="onConfirm"
     >
@@ -67,7 +67,7 @@
         <el-form
           :model="addModel"
           ref="addRef"
-          :rules="registerRules"
+          :rules="registeRules"
           label-width="80px"
           size="small"
           style="margin-right: 30px"
@@ -104,20 +104,14 @@
             </el-col>
             <el-col :span="12" :offset="0">
               <el-form-item prop="password" label="密码">
-                <el-input
-                  type="password"
-                  v-model="addModel.password"
-                ></el-input>
+                <el-input type="password" v-model="addModel.password"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12" :offset="0">
               <el-form-item prop="confirmPassword" label="确认密码">
-                <el-input
-                  type="password"
-                  v-model="addModel.confirmPassword"
-                ></el-input>
+                <el-input type="password" v-model="addModel.confirmPassword"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12" :offset="0">
@@ -136,6 +130,7 @@
 </template>
 
 <script>
+import {setUserType} from '@/utils/auth'
 import { registerApi } from "@/api/reader";
 import SysDialog from "@/components/dialog/SysDialog.vue";
 export default {
@@ -144,7 +139,7 @@ export default {
   },
   data() {
     return {
-      registerRules: {
+      registeRules: {
         learnNum: [{ required: true, message: "请填写姓名", trigger: "blur" }],
         username: [{ required: true, message: "请填写学号", trigger: "blur" }],
         idCard: [
@@ -173,9 +168,9 @@ export default {
       },
       dialog: {
         title: "读者注册",
-        visible: false,
-        height: 250,
         width: 650,
+        height: 250,
+        visible: false,
       },
       //登录表单绑定数据源
       loginForm: {
@@ -210,9 +205,12 @@ export default {
     };
   },
   methods: {
+    onClose() {
+      this.dialog.visible = false;
+    },
     onConfirm() {
-      if (this.addModel.password != this.addModel.confirmPassword) {
-        this.$message.warning("确认密码不对!");
+      if (this.addModel.confirmPassword != this.addModel.password) {
+        this.$message.warning("两次密码不一致!");
         return;
       }
       this.$refs.addRef.validate(async (valid) => {
@@ -225,10 +223,7 @@ export default {
         }
       });
     },
-    onClose() {
-      this.dialog.visible = false;
-    },
-    //注册按钮
+    //读者注册
     registerBtn() {
       //清空表单
       this.$resetForm("addRef", this.addModel);
@@ -241,6 +236,7 @@ export default {
         //验证通过才提交表单
         if (valid) {
           this.loading = true;
+          setUserType(this.loginForm.userType)
           //调用store里面的login方法
           this.$store
             .dispatch("user/login", this.loginForm)
@@ -273,7 +269,7 @@ export default {
   height: 350px;
   width: 450px;
   background: #fff;
-  padding: 35px 25px;
+  padding: 35px 20px;
   border-radius: 10px;
 }
 .loginTitle {
