@@ -263,7 +263,7 @@ export default {
       this.assignDialog.visible = true;
       //获取权限数据
       let parm = {
-        userId: "3",
+        userId: "9",
         roleId: this.roleId,
       };
       let res = await getAssingShowApi(parm);
