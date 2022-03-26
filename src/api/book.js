@@ -23,3 +23,10 @@ export const editBookApi = async(parm) =>{
 export const deleteBookApi = async(parm) =>{
     return await http.delete("/api/books",parm)
 }
+
+
+//前十的借书图书
+export const getHotBookApi = async() =>{
+    return await http.get("/api/books/getHotBook",null)
+}
+

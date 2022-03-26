@@ -15,3 +15,9 @@ export const editApi = async(parm) =>{
 export const deleteApi = async(parm) =>{
     return await http.delete("/api/category",parm)
 }
+
+//图书分类统计
+export const categoryCountApi = async() =>{
+    return await http.get("/api/category/categoryCount",null)
+}
+

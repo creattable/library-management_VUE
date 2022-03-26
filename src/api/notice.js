@@ -17,3 +17,7 @@ export const deleteApi = async(parm) =>{
     return await http.delete("/api/notice",parm)
 }
 
+//查询前三条公告
+export const getTopListApi = async() =>{
+    return await http.get("/api/notice/getTopList",null)
+}

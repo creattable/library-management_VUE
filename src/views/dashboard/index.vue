@@ -42,7 +42,12 @@
         <span style="color: #000000; font-weight: 600">公告列表</span>
       </div>
       <div v-for="o in noticeList" :key="o.noticeId" class="text item">
-        <span style="font-weight:600;font-size:14px;">{{o.noticeTitle}}</span><span style="margin-left:30px;font-size:14px">{{o.noticeContent}}</span>
+        <span style="font-weight: 600; font-size: 14px">{{
+          o.noticeTitle
+        }}</span
+        ><span style="margin-left: 30px; font-size: 14px">{{
+          o.noticeContent
+        }}</span>
         <el-divider></el-divider>
       </div>
     </el-card>
@@ -64,7 +69,7 @@ export default {
       applyReader: 0,
       borrowApplyCount: 0,
       borrowReturnCount: 0,
-      noticeList:[]
+      noticeList: [],
     };
   },
   mounted() {
@@ -74,14 +79,14 @@ export default {
     this.getApplyReaderCount();
     this.getBorrowApplyCount();
     this.getBorrowReturnCount();
-    this.getNoticeList()
+    this.getNoticeList();
   },
   methods: {
-    async getNoticeList(){
-      let res = await getTopListApi()
-      if(res && res.code == 200){
-        console.log('公告列表')
-        console.log(res)
+    async getNoticeList() {
+      let res = await getTopListApi();
+      if (res && res.code == 200) {
+        console.log("公告列表");
+        console.log(res);
         this.noticeList = res.data;
       }
     },
@@ -141,12 +146,12 @@ export default {
         ],
       };
       //动态获取数据
-      let res = await categoryCountApi()
-      if(res && res.code == 200){
-        console.log('分类数据')
-        console.log(res)
-        option.xAxis.data = res.data.names
-        option.series[0].data = res.data.counts
+      let res = await categoryCountApi();
+      if (res && res.code == 200) {
+        console.log("分类数据");
+        console.log(res);
+        option.xAxis.data = res.data.names;
+        option.series[0].data = res.data.counts;
       }
       // 使用刚指定的配置项和数据显示图表。
       myChart.setOption(option);
@@ -185,10 +190,10 @@ export default {
         ],
       };
       //动态获取数据
-      let res = await getHotBookApi() 
-      if(res && res.code == 200){
-        console.log('热门图书')
-        console.log(res)
+      let res = await getHotBookApi();
+      if (res && res.code == 200) {
+        console.log("热门图书");
+        console.log(res);
         option.series[0].data = res.data;
       }
       // 使用刚指定的配置项和数据显示图表。
