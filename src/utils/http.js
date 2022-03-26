@@ -50,12 +50,13 @@ service.interceptors.response.use(
 
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 200) {
-      // Message({
-      //   message: res.msg || '服务器出错',
-      //   type: 'error',
-      //   duration: 5 * 1000
-      // })
-
+      if (res.code !== 600) {
+        Message({
+          message: res.msg || '服务器出错',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
       //600是token过期或token验证失败 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 600) {
         // to re-login
@@ -87,97 +88,97 @@ service.interceptors.response.use(
 
 //请求方法
 const http = {
-    post(url, params) {
-      return service.post(url, params, {
-        transformRequest: [(params) => {
-          return JSON.stringify(params)
-        }],
-        headers: {
-          'Content-Type': 'application/json'
+  post(url, params) {
+    return service.post(url, params, {
+      transformRequest: [(params) => {
+        return JSON.stringify(params)
+      }],
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  },
+  put(url, params) {
+    return service.put(url, params, {
+      transformRequest: [(params) => {
+        return JSON.stringify(params)
+      }],
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  },
+  //parm =>  {id:10}
+  // http://localhost:8089/api/user?id=10
+  get(url, params) {
+    return service.get(url, {
+      params: params,
+      paramsSerializer: (params) => {
+        return qs.stringify(params)
+      }
+    })
+  },
+  //parm =>  {id:10}
+  // http://localhost:8089/api/user/10
+  getRestApi(url, params) {
+    let _params
+    if (Object.is(params, undefined || null)) {
+      _params = ''
+    } else {
+      _params = '/'
+      for (const key in params) {
+        console.log(key)
+        console.log(params[key])
+        // eslint-disable-next-line no-prototype-builtins
+        if (params.hasOwnProperty(key) && params[key] !== null && params[key] !== '') {
+          _params += `${params[key]}/`
         }
+      }
+      //去掉参数最后一位?
+      _params = _params.substr(0, _params.length - 1)
+    }
+    console.log(_params)
+    if (_params) {
+      return service.get(`${url}${_params}`)
+    } else {
+      return service.get(url)
+    }
+  },
+  //parm =>  {id:10}
+  // http://localhost:8089/api/user/10
+  delete(url, params) {
+    let _params
+    if (Object.is(params, undefined || null)) {
+      _params = ''
+    } else {
+      _params = '/'
+      for (const key in params) {
+        // eslint-disable-next-line no-prototype-builtins
+        if (params.hasOwnProperty(key) && params[key] !== null && params[key] !== '') {
+          _params += `${params[key]}/`
+        }
+      }
+      //去掉参数最后一位?
+      _params = _params.substr(0, _params.length - 1)
+    }
+    if (_params) {
+      return service.delete(`${url}${_params}`).catch(err => {
+        // message.error(err.msg)
+        return Promise.reject(err)
       })
-    },
-    put(url, params) {
-      return service.put(url, params, {
-        transformRequest: [(params) => {
-          return JSON.stringify(params)
-        }],
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-    },
-    //parm =>  {id:10}
-    // http://localhost:8089/api/user?id=10
-    get(url, params) {
-      return service.get(url, {
-        params: params,
-        paramsSerializer: (params) => {
-          return qs.stringify(params)
-        }
-      })
-    },
-    //parm =>  {id:10}
-    // http://localhost:8089/api/user/10
-    getRestApi(url, params) {
-      let _params
-      if (Object.is(params, undefined || null)) {
-        _params = ''
-      } else {
-        _params = '/'
-        for (const key in params) {
-          console.log(key)
-          console.log(params[key])
-          // eslint-disable-next-line no-prototype-builtins
-          if (params.hasOwnProperty(key) && params[key] !== null && params[key] !== '') {
-            _params += `${params[key]}/`
-          }
-        }
-        //去掉参数最后一位?
-        _params = _params.substr(0, _params.length - 1)
-      }
-      console.log(_params)
-      if (_params) {
-        return service.get(`${url}${_params}`)
-      } else {
-        return service.get(url)
-      }
-    },
-    //parm =>  {id:10}
-    // http://localhost:8089/api/user/10
-    delete(url, params) {
-      let _params
-      if (Object.is(params, undefined || null)) {
-        _params = ''
-      } else {
-        _params = '/'
-        for (const key in params) {
-          // eslint-disable-next-line no-prototype-builtins
-          if (params.hasOwnProperty(key) && params[key] !== null && params[key] !== '') {
-            _params += `${params[key]}/`
-          }
-        }
-        //去掉参数最后一位?
-        _params = _params.substr(0, _params.length - 1)
-      }
-      if (_params) {
-        return service.delete(`${url}${_params}`).catch(err => {
-          // message.error(err.msg)
-          return Promise.reject(err)
-        })
-      } else {
-        return service.delete(url).catch(err => {
-          // message.error(err.msg)
-          return Promise.reject(err)
-        })
-      }
-    },
-    upload(url, params) {
-      return service.post(url, params, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+    } else {
+      return service.delete(url).catch(err => {
+        // message.error(err.msg)
+        return Promise.reject(err)
       })
     }
+  },
+  upload(url, params) {
+    return service.post(url, params, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   }
-  export default http
+}
+export default http

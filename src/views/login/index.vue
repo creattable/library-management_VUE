@@ -104,20 +104,14 @@
             </el-col>
             <el-col :span="12" :offset="0">
               <el-form-item prop="password" label="密码">
-                <el-input
-                  type="password"
-                  v-model="addModel.password"
-                ></el-input>
+                <el-input type="password" v-model="addModel.password"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12" :offset="0">
               <el-form-item prop="confirmPassword" label="确认密码">
-                <el-input
-                  type="password"
-                  v-model="addModel.confirmPassword"
-                ></el-input>
+                <el-input type="password" v-model="addModel.confirmPassword"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12" :offset="0">
@@ -136,7 +130,7 @@
 </template>
 
 <script>
-import { setUserType } from "@/utils/auth";
+import {setUserType} from '@/utils/auth'
 import { registerApi } from "@/api/reader";
 import SysDialog from "@/components/dialog/SysDialog.vue";
 export default {
@@ -242,7 +236,7 @@ export default {
         //验证通过才提交表单
         if (valid) {
           this.loading = true;
-          setUserType(this.loginForm.userType);
+          setUserType(this.loginForm.userType)
           //调用store里面的login方法
           this.$store
             .dispatch("user/login", this.loginForm)
