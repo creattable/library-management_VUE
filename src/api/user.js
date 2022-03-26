@@ -63,3 +63,10 @@ export const getRoleIdApi = async (parm) => {
 export const getMenuListApi = async () => {
   return await http.get("/api/system/getMenuList", null)
 }
+
+
+//修改密码
+export const updatePasswordApi = async (parm) => {
+  return await http.post("/api/user/getMenuLupdatePasswordist", parm)
+}
+

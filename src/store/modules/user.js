@@ -90,6 +90,8 @@ const actions = {
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
+        //清空tagsview里面的数据
+        dispatch('tagsView/delAllViews', {}, { root: true })
         resolve()
       }).catch(error => {
         reject(error)
@@ -103,6 +105,8 @@ const actions = {
       removeToken() // must remove  token  first
       clearSession();
       commit('RESET_STATE')
+      //清空tagsview里面的数据
+      dispatch('tagsView/delAllViews', {}, { root: true })
       resolve()
     })
   }
