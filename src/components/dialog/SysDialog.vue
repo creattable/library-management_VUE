@@ -6,6 +6,7 @@
     :width="width + 'px'"
     :before-close="onClose"
     :close-on-click-modal='false'
+    append-to-body
   >
     <div class="containner" :style="{ height: height + 'px' }">
       <slot name="content"></slot>

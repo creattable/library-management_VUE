@@ -14,10 +14,10 @@
           >重置</el-button
         >
         <el-button
+          v-permission="['sys:role:add']"
           type="primary"
           @click="addBtn"
           icon="el-icon-plus"
-          v-permission="['sys:role:add']"
           >新增</el-button
         >
       </el-form-item>
@@ -263,7 +263,7 @@ export default {
       this.assignDialog.visible = true;
       //获取权限数据
       let parm = {
-        userId: "9",
+        userId: "3",
         roleId: this.roleId,
       };
       let res = await getAssingShowApi(parm);

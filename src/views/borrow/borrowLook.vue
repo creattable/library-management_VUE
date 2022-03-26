@@ -129,11 +129,11 @@
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.applyStatus == '0'"
+            v-permission="['sys:borrowLook:apply']"
             icon="el-icon-edit"
             type="primary"
             size="small"
             @click="applyBtn(scope.row)"
-            v-permission="['sys:borrowLook:apply']"
             >同意借阅</el-button
           >
           <el-button

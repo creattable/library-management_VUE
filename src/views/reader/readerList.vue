@@ -31,7 +31,11 @@
         <el-button style="color: #ff7670" icon="el-icon-close" @click="resetBtn"
           >重置</el-button
         >
-        <el-button v-permission="['sys:reader:add']" type="primary" icon="el-icon-plus" @click="addBtn"
+        <el-button
+          v-permission="['sys:reader:add']"
+          type="primary"
+          icon="el-icon-plus"
+          @click="addBtn"
           >新增</el-button
         >
       </el-form-item>
@@ -63,10 +67,10 @@
           <el-tag v-if="scope.row.userStatus == '1'">启用</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="350">
+      <el-table-column label="操作" align="center" width="380">
         <template slot-scope="scope">
           <el-button
-          v-permission="['sys:reader:edit']"
+            v-permission="['sys:reader:edit']"
             icon="el-icon-edit"
             type="primary"
             size="small"
@@ -74,15 +78,23 @@
             >编辑</el-button
           >
           <el-button
-          v-permission="['sys:reader:apply']"
+            v-permission="['sys:reader:apply']"
             icon="el-icon-edit"
             type="primary"
             size="small"
             @click="applyBtn(scope.row)"
-            >审核通过</el-button
+            >审核</el-button
           >
           <el-button
-          v-permission="['sys:reader:delete']"
+            v-permission="['sys:reader:resetpassword']"
+            icon="el-icon-edit"
+            type="danger"
+            size="small"
+            @click="resetPasswordBtn(scope.row)"
+            >重置密码</el-button
+          >
+          <el-button
+            v-permission="['sys:reader:delete']"
             icon="el-icon-delete"
             type="danger"
             size="small"
@@ -182,6 +194,7 @@ import {
   editReaderApi,
   deleteReaderApi,
   applyReaderApi,
+  resetPasswordApi,
 } from "@/api/reader";
 export default {
   //注册组件
@@ -245,9 +258,20 @@ export default {
     this.getList();
   },
   methods: {
-    //审核按钮
+    async resetPasswordBtn(row) {
+      let confirm = await this.$myconfirm("确定重置密码吗，重置之后默认密码为【666666】?");
+      if (confirm) {
+        console.log(row);
+        let res = await resetPasswordApi({
+          readerId: row.readerId,
+        });
+        if (res && res.code == 200) {
+          this.$message.success(res.msg);
+        }
+      }
+    },
     async applyBtn(row) {
-      let confirm = await this.$myconfirm("确定审核通过吗?");
+      let confirm = await this.$myconfirm("确定审核吗?");
       if (confirm) {
         console.log(row);
         let res = await applyReaderApi({ readerId: row.readerId });
@@ -255,7 +279,6 @@ export default {
           this.$message.success(res.msg);
           //刷新表格
           this.getList();
-          this.dialog.visible = false;
         }
       }
     },

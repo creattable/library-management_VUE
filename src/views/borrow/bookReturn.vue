@@ -117,10 +117,10 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item prop="exceptionText" label="备注">
+          <el-form-item prop="excepionText" label="备注">
             <el-input
               type="textarea"
-              v-model="exception.exceptionText"
+              v-model="exception.excepionText"
             ></el-input>
           </el-form-item>
         </el-form>
@@ -146,7 +146,7 @@ export default {
         type: [
           { required: true, message: "请选择异常类型", trigger: "change" },
         ],
-        exceptionText: [
+        excepionText: [
           { required: true, message: "请填写备注", trigger: "change" },
         ],
       },
@@ -164,7 +164,7 @@ export default {
         borrowId: "",
         bookId: "",
         type: "",
-        exceptionText: "",
+        excepionText: "",
       },
       //弹框属性定义
       dialog: {
@@ -235,7 +235,6 @@ export default {
     },
     //单独还书的事件
     async alongReturnBtn(row) {
-      //前端的bug，数据如果不清空的话，第二次还书的时候会把第一次还的书再还一次
       this.bookIds = [];
       console.log(row);
       let confirm = await this.$myconfirm("确定还书吗?");
@@ -263,7 +262,6 @@ export default {
       this.returnBorrow();
     },
     async returnBtn() {
-      //前端的bug，数据如果不清空的话，第二次还书的时候会把第一次还的书再还一次
       this.bookIds = [];
       let confirm = await this.$myconfirm("确定还书吗?");
       if (confirm) {

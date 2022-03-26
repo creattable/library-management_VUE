@@ -14,10 +14,10 @@
           >重置</el-button
         >
         <el-button
+          v-permission="['sys:bookCategory:add']"
           type="primary"
           icon="el-icon-plus"
           @click="addBtn"
-          v-permission="['sys:bookCategory:add']"
           >新增</el-button
         >
       </el-form-item>
@@ -29,19 +29,19 @@
       <el-table-column label="操作" align="center" width="180">
         <template slot-scope="scope">
           <el-button
+            v-permission="['sys:bookCategory:edit']"
             type="primary"
             size="small"
             icon="el-icon-edit"
             @click="editBtn(scope.row)"
-            v-permission="['sys:bookCategory:edit']"
             >编辑</el-button
           >
           <el-button
+            v-permission="['sys:bookCategory:delete']"
             type="danger"
             size="small"
             icon="el-icon-delete"
             @click="deleteBtn(scope.row)"
-            v-permission="['sys:bookCategory:delete']"
             >删除</el-button
           >
         </template>
@@ -198,8 +198,8 @@ export default {
     //删除按钮
     async deleteBtn(row) {
       //信息确认
-      const confirm = await this.$myconfirm("确定要删除吗?");
-      if (confirm) {
+      const confrim = await this.$myconfirm("确定删除该数据吗?");
+      if (confrim) {
         let res = await deleteApi({ categoryId: row.categoryId });
         if (res && res.code == 200) {
           //信息提示

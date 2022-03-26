@@ -1,5 +1,5 @@
 import { loginApi, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken, setUserId, getUserId, clearSession } from '@/utils/auth'
+import { getToken, setToken, removeToken,setUserId,getUserId,clearSession } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
@@ -32,18 +32,18 @@ const mutations = {
 }
 
 const actions = {
-  // user login vuex里面的用户登录
+  // user login  vuex里面的用户登录
   login({ commit }, userInfo) {
-    const { username, password, userType } = userInfo
+    const { username, password,userType } = userInfo
     return new Promise((resolve, reject) => {
-      //这里调用的是，api里面的user.js模块里面的login方法
-      loginApi({ username: username.trim(), password: password, userType: userType }).then(response => {
+      //api里面的user.js模块里面的login方法
+      loginApi({ username: username.trim(), password: password,userType:userType }).then(response => {
         const { data } = response
         console.log('登录成功')
         console.log(data)
-        //登录成功之后，把token存到vuex里面
+        //登录返回之后，把token存到vuex里面
         commit('SET_TOKEN', data.token)
-        //还把token存到了cookies里面
+        //token存到cookies里面
         setToken(data.token)
         setUserId(data.userId)
         resolve()
@@ -53,12 +53,12 @@ const actions = {
     })
   },
 
-  //获取用户的权限信息
   // get user info
+  //获取用户的权限信息和自己的信息
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo({ userId: getUserId() }).then(response => {
-        console.log("获取用户权限字段")
+      getInfo({userId:getUserId()}).then(response => {
+        console.log('获取用户权限字段')
         console.log(response)
         const { data } = response
 
@@ -84,7 +84,7 @@ const actions = {
   },
 
   // user logout
-  logout({ commit, state }) {
+  logout({ commit, state ,dispatch}) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         removeToken() // must remove  token  first
@@ -100,7 +100,7 @@ const actions = {
   },
 
   // remove token
-  resetToken({ commit }) {
+  resetToken({ commit,dispatch }) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
       clearSession();

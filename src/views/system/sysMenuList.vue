@@ -3,10 +3,10 @@
     <el-form size="small">
       <el-form-item>
         <el-button
+          v-permission="['sys:menu:add']"
           @click="addBtn"
           type="primary"
           icon="el-icon-plus"
-          v-permission="['sys:menu:add']"
           >新增</el-button
         >
       </el-form-item>
@@ -309,7 +309,7 @@ export default {
       this.dialog.visible = true;
       //清空表单
       this.$resetForm("addRef", this.addModel);
-      //把要编辑的数据放到表单绑定的数据里面,回显到编辑菜单页面的表单里,简单来说，就是把row的数据绑定到addModel里
+      //把要编辑的数据放到表单绑定的数据里面,回显
       this.$objCoppy(row, this.addModel);
       this.addModel.editType = "1";
     },

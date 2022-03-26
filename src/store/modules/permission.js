@@ -1,7 +1,6 @@
 import { constantRoutes } from '@/router'
 import Layout from '@/layout'
 import { getMenuListApi } from '@/api/user'
-
 /**
  * Use meta.role to determine if the current user has permission
  * @param roles
@@ -20,6 +19,7 @@ function hasPermission(roles, route) {
  * @param routes asyncRoutes
  * @param roles
  */
+
 // export function filterAsyncRoutes(routes, roles) {
 //   const res = []
 
@@ -41,10 +41,8 @@ export function filterAsyncRoutes(routes, roles) {
   routes.forEach(route => {
     const tmp = { ...route }
     if (hasPermission(roles, tmp)) {
-      //动态找到页面路径
       const component = tmp.component;
       if (component) {
-        //判断是否是一级菜单
         if (component == 'Layout') {
           tmp.component = Layout;
         } else {
@@ -60,6 +58,7 @@ export function filterAsyncRoutes(routes, roles) {
 
   return res
 }
+
 
 const state = {
   routes: [],
@@ -84,15 +83,6 @@ const actions = {
         commit('SET_ROUTES', accessedRoutes)
         resolve(accessedRoutes)
       })
-
-      // let accessedRoutes
-      // if (roles.includes('admin')) {
-      //   accessedRoutes = asyncRoutes || []
-      // } else {
-      //   accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
-      // }
-      // commit('SET_ROUTES', accessedRoutes)
-      // resolve(accessedRoutes)
     })
   }
 }

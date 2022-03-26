@@ -11,13 +11,10 @@ export const addApi = async(parm) =>{
 export const editApi = async(parm)=>{
     return await http.put("/api/notice",parm)
 }
-
 //删除
 export const deleteApi = async(parm) =>{
     return await http.delete("/api/notice",parm)
 }
-
-//查询前三条公告
 export const getTopListApi = async() =>{
     return await http.get("/api/notice/getTopList",null)
 }

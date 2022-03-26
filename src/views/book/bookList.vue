@@ -36,7 +36,11 @@
         <el-button style="color: #ff7670" icon="el-icon-close" @click="resetBtn"
           >重置</el-button
         >
-        <el-button type="primary" icon="el-icon-plus" @click="addBtn" v-permission="['sys:bookList:add']"
+        <el-button
+          v-permission="['sys:bookList:add']"
+          type="primary"
+          icon="el-icon-plus"
+          @click="addBtn"
           >新增</el-button
         >
       </el-form-item>
@@ -53,19 +57,19 @@
       <el-table-column label="操作" align="center" width="180">
         <template slot-scope="scope">
           <el-button
+            v-permission="['sys:bookList:edit']"
             icon="el-icon-edit"
             type="primary"
             size="small"
             @click="editBtn(scope.row)"
-            v-permission="['sys:bookList:edit']"
             >编辑</el-button
           >
           <el-button
+            v-permission="['sys:bookList:delete']"
             type="danger"
             icon="el-icon-delete"
             size="small"
             @click="deleteBtn(scope.row)"
-            v-permission="['sys:bookList:delete']"
             >删除</el-button
           >
         </template>
@@ -329,17 +333,17 @@ export default {
     },
     //页数改变时触发
     currentChange(val) {
-      this.listParm.current = val;
-      this.getList()
+      this.listParm.currentPage = val;
+      this.getList();
     },
     //页容量改变时触发
     sizeChange(val) {
       this.listParm.pageSize = val;
-      this.getList()
+      this.getList();
     },
     //删除按钮
     async deleteBtn(row) {
-      let confirm = await this.$myconfirm("确定删除?");
+      let confirm = await this.$myconfirm("确定删除该数据吗?");
       if (confirm) {
         let res = await deleteBookApi({ bookId: row.bookId });
         if (res && res.code == 200) {
@@ -347,7 +351,6 @@ export default {
           this.$message({ type: "success", message: res.msg });
           //刷新表格
           this.getList();
-          this.dialog.visible = false;
         }
       }
     },
@@ -371,10 +374,10 @@ export default {
     },
     //重置按钮
     resetBtn() {
-      this.listParm.categoryId='',
-      this.listParm.bookName='',
-      this.listParm.bookPlaceNum='',
-      this.listParm.bookAuther=''
+      this.listParm.categoryId = "";
+      this.listParm.bookName = "";
+      this.listParm.bookPlaceNum = "";
+      this.listParm.bookAuther = "";
       this.getList();
     },
     //搜索按钮

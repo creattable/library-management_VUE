@@ -1,5 +1,6 @@
 <template>
   <el-main>
+    <!-- 读者信息 -->
     <div
       style="
         margin: 0px 0px 15px 0px;
@@ -11,12 +12,12 @@
       读者信息
     </div>
     <el-card class="box-card">
-      <div slot="header" style="padding: 0px" class="clearfix">
+      <div slot="header" class="clearfix">
         <el-form
           :model="searchParm"
           label-width="80px"
           :inline="true"
-          size="mini"
+          size="small"
         >
           <el-form-item label="学号">
             <el-input v-model="searchParm.username"></el-input>
@@ -26,9 +27,9 @@
               >查询</el-button
             >
             <el-button
-              style="color: #ff7670"
               icon="el-icon-close"
               @click="resetBtn"
+              style="color: #ff7670"
               >重置</el-button
             >
           </el-form-item>
@@ -43,18 +44,17 @@
           <el-form-item>
             <el-button
               type="primary"
-              size="mini"
               icon="el-icon-edit-outline"
+              size="mini"
               @click="borrowBtn"
               >借书</el-button
             >
           </el-form-item>
         </el-form>
       </div>
-      <div>
+      <div class="text item">
         <el-form
           :model="showUser"
-          ref="form"
           label-width="80px"
           :inline="true"
           size="small"
@@ -85,6 +85,7 @@
         </el-form>
       </div>
     </el-card>
+    <!-- 图书列表 -->
     <div
       style="
         margin: 15px 0px;
@@ -95,41 +96,36 @@
     >
       图书列表
     </div>
-    <div>
-      <elt-transfer
-        ref="eltTransfer"
-        :show-query="true"
-        :show-pagination="true"
-        :pagination-call-back="paginationCallBack"
-        :left-columns="leftColumns"
-        :title-texts="['待选', '已选']"
-        :button-texts="['添加', '删除']"
-        :query-texts="['查询', '查询']"
-        :table-row-key="(row) => row.bookId"
-        v-model="tableData"
-      >
-        <!-- 可以使用插槽获取到列信息和行信息，从而进行数据的处理 -->
-        <template v-slot:leftCondition>
-          <el-form-item label="图书名称">
-            <el-input
-              v-model="listParm.bookName"
-              placeholder="图书名称"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="图书作者">
-            <el-input
-              v-model="listParm.bookAuther"
-              placeholder="图书作者"
-            ></el-input>
-          </el-form-item>
-        </template>
-        <template v-slot:rightCondition="{ scope }">
-          <el-form-item label="名称">
-            <el-input v-model="scope.bookName" placeholder="名称"></el-input>
-          </el-form-item>
-        </template>
-      </elt-transfer>
-    </div>
+    <elt-transfer
+      ref="eltTransfer"
+      :show-query="true"
+      :show-pagination="true"
+      :pagination-call-back="paginationCallBack"
+      :left-columns="leftColumns"
+      :title-texts="['待选', '已选']"
+      :button-texts="['添加', '删除']"
+      :query-texts="['查询', '查询']"
+      :table-row-key="(row) => row.bookId"
+      v-model="tableData"
+    >
+      <!-- 可以使用插槽获取到列信息和行信息，从而进行数据的处理 -->
+      <template v-slot:leftCondition="{}">
+        <el-form-item label="图书名称">
+          <el-input
+            v-model="listParm.bookName"
+            placeholder="图书名称"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="作者">
+          <el-input v-model="listParm.bookAuther" placeholder="作者"></el-input>
+        </el-form-item>
+      </template>
+      <template v-slot:rightCondition="{ scope }">
+        <el-form-item label="名称">
+          <el-input v-model="scope.bookName" placeholder="图书名称"></el-input>
+        </el-form-item>
+      </template>
+    </elt-transfer>
   </el-main>
 </template>
 
@@ -139,13 +135,22 @@ import { getByUserNameApi } from "@/api/reader";
 import { getListApi } from "@/api/book";
 import eltTransfer from "elt-transfer/src/eltTransfer";
 export default {
+  //注册组件
   components: {
     "elt-transfer": eltTransfer,
   },
   data() {
     return {
       returnTime: "",
-      bookIds: "",
+      bookIds: [],
+      //图书列表分页参数
+      listParm: {
+        currentPage: "",
+        pageSize: "",
+        bookName: "",
+        bookAuther: "",
+      },
+      //选择的图书
       tableData: [],
       leftColumns: [
         { label: "图书名称", id: "bookName", width: "120px" },
@@ -169,13 +174,6 @@ export default {
         className: "",
         checkStatus: "",
       },
-      //图书列表分页参数
-      listParm: {
-        currentPage: "",
-        pageSize: "",
-        bookName: "",
-        bookAuther: "",
-      },
     };
   },
   methods: {
@@ -184,15 +182,15 @@ export default {
       this.bookIds = [];
       console.log(this.tableData);
       if (!this.returnTime) {
-        this.$message.error("请选择还书时间");
+        this.$message.error("请选择还书时间!");
         return;
       }
       if (!this.showUser.readerId) {
-        this.$message.error("请查询借书信息是否存在");
+        this.$message.error("请查询借书人信息是否存在!");
         return;
       }
       if (this.tableData.length < 1) {
-        this.$message.error("请选择要借的书");
+        this.$message.error("请选择要借的图书!");
         return;
       }
       //找到每个图书的id
@@ -213,11 +211,32 @@ export default {
         }, 3000);
       }
     },
+    //重置按钮
+    resetBtn() {
+      this.searchParm.username = "";
+      this.showUser.readerId = "";
+      this.showUser.learnNum = "";
+      this.showUser.username = "";
+      this.showUser.idCard = "";
+      this.showUser.sex = "";
+      this.showUser.phone = "";
+      this.showUser.className = "";
+      this.showUser.checkStatus = "";
+    },
+    //获取读者信息
+    async getByUserName() {
+      let res = await getByUserNameApi(this.searchParm);
+      if (res && res.code == 200 && res.data) {
+        this.showUser = res.data;
+      }
+    },
     async paginationCallBack(obj) {
       console.log(obj);
       this.listParm.currentPage = obj.pageIndex;
       this.listParm.pageSize = obj.pageSize;
+      //获取图书数据
       let res = await getListApi(this.listParm);
+      console.log(res);
       return new Promise((resolve, reject) => {
         try {
           resolve({ total: res.data.total, data: res.data.records });
@@ -228,25 +247,6 @@ export default {
     },
     clearTransfer() {
       this.$refs.eltTransfer.clear();
-    },
-    //根据学号查询读者
-    async getByUserName() {
-      let res = await getByUserNameApi(this.searchParm);
-      console.log(res);
-      if (res && res.code == 200 && res.data) {
-        this.showUser = res.data;
-      }
-    },
-    resetBtn() {
-      this.searchParm.username = "";
-      this.searchParm.readerId = "";
-      this.showUser.learnNum = "";
-      this.showUser.username = "";
-      this.showUser.idCard = "";
-      this.showUser.sex = "";
-      this.showUser.phone = "";
-      this.showUser.className = "";
-      this.showUser.checkStatus = "";
     },
   },
 };

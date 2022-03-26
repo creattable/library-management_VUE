@@ -25,7 +25,7 @@
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="updatePwd">
-            <span style="display: block">修改密码</span>
+            <span style="display: block">密码修改</span>
           </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
             <span style="display: block">退出登录</span>
@@ -39,8 +39,8 @@
       :height="dialog.height"
       :width="dialog.width"
       :visible="dialog.visible"
-      @onConfirm="onConfirm"
       @onClose="onClose"
+      @onConfirm="onConfirm"
     >
       <div slot="content">
         <el-form
@@ -80,16 +80,16 @@ export default {
     return {
       rules: {
         oldPassword: [
-          { trigger: "blur", required: true, message: "请填写原密码!" },
+          { trigger: "blur", required: true, message: "原密码不能为空!" },
         ],
         password: [
-          { trigger: "blur", required: true, message: "请填写新密码!" },
+          { trigger: "blur", required: true, message: "新密码不能为空!" },
         ],
       },
       addModel: {
+        userId: "",
         oldPassword: "",
         password: "",
-        userId: "",
       },
       dialog: {
         title: "密码修改",
